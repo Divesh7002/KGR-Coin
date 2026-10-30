@@ -1,0 +1,674 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KGR Coin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 15% 15%, rgba(124, 58, 237, 0.22), transparent 40%),
+        radial-gradient(ellipse at 85% 80%, rgba(168, 85, 247, 0.15), transparent 40%),
+        linear-gradient(135deg, #050408, #0b0712, #10091a);
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+}
+
+.glass {
+    background: rgba(22, 14, 32, 0.78);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(124, 58, 237, 0.08);
+}
+
+.main-btn {
+    background: linear-gradient(90deg, #7c3aed, #a855f7);
+    color: white;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+    transition: 0.3s;
+}
+
+.main-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 22px rgba(168, 85, 247, 0.5);
+}
+
+input {
+    outline: none;
+}
+
+input:focus {
+    border: 1px solid #c084fc;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+}
+
+/* Header coin */
+.kgr-coin {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff0a6, #e8ae20, #a96b08);
+    border: 4px solid #ffdf83;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 22px rgba(255, 193, 7, 0.55);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.kgr-coin::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 2px solid rgba(120, 70, 0, 0.5);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.kgr-bird {
+    width: 57px;
+    height: 57px;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+}
+
+/* Full-screen opening animation */
+#coinIntro {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(circle at center, #291044, #0b0712 75%);
+    perspective: 1000px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease;
+}
+
+#coinIntro.finished {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.intro-coin {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff0a6, #e8ae20, #a96b08);
+    border: 7px solid #ffdf83;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 50px rgba(255, 193, 7, 0.8),
+        0 0 90px rgba(168, 85, 247, 0.35),
+        inset 0 0 20px rgba(100, 55, 0, 0.5);
+    overflow: hidden;
+    animation: coinEntrance 2s cubic-bezier(.2,.8,.2,1) forwards;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+}
+
+.intro-coin img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+}
+
+/* Coin rotation and zoom */
+@keyframes coinEntrance {
+    0% {
+        transform: translateZ(-500px) scale(0.12) rotateY(0deg);
+        opacity: 0;
+    }
+    20% {
+        transform: translateZ(0) scale(1.35) rotateY(360deg);
+        opacity: 1;
+    }
+    45% {
+        transform: translateZ(250px) scale(2.1) rotateY(720deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translateZ(100px) scale(1.45) rotateY(1080deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateZ(-500px) scale(0.12) rotateY(1440deg);
+        opacity: 0;
+    }
+}
+
+/* Dashboard reveal */
+body.intro-active header,
+body.intro-active main {
+    opacity: 0;
+    transform: translateY(25px);
+}
+
+body.intro-done header,
+body.intro-done main {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+</style>
+</head>
+
+<body class="text-white min-h-screen p-6 intro-active">
+
+<!-- KGR COIN INTRO -->
+<div id="coinIntro">
+    <div class="intro-coin">
+        <img src="kgr-bird.jpg" alt="KGR Coin Bird Logo">
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4 mb-12">
+
+    <div class="flex items-center gap-3">
+        <div class="kgr-coin">
+            <img src="kgr-bird.jpg" alt="KG Reddy Bird Logo" class="kgr-bird">
+        </div>
+
+        <div>
+            <h1 class="text-3xl font-bold text-purple-300">KGR COIN</h1>
+            <p class="text-purple-200 text-sm">Blockchain Token Ecosystem</p>
+        </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+        <button id="connect" class="main-btn px-6 py-3 rounded-xl font-semibold">
+            Connect Wallet
+        </button>
+
+        <button id="addToken" class="main-btn px-6 py-3 rounded-xl font-semibold">
+            + Add KGR Coin
+        </button>
+    </div>
+
+</header>
+
+<main class="max-w-6xl mx-auto">
+
+    <div class="mb-10">
+        <h2 class="text-4xl font-bold mb-3">Welcome to KGR Coin</h2>
+        <p class="text-purple-100">
+            Your decentralized digital token dashboard on Sepolia.
+        </p>
+    </div>
+
+    <!-- TOKEN INFORMATION -->
+    <section class="grid md:grid-cols-3 gap-6 mb-10">
+
+        <div class="glass p-7 rounded-2xl">
+            <p class="text-purple-200">Token Name</p>
+            <h3 id="name" class="text-2xl font-bold mt-4">KGR Coin</h3>
+        </div>
+
+        <div class="glass p-7 rounded-2xl">
+            <p class="text-purple-200">Total Supply</p>
+            <h3 id="supply" class="text-2xl font-bold mt-4">--</h3>
+        </div>
+
+        <div class="glass p-7 rounded-2xl">
+            <p class="text-purple-200">My Balance</p>
+            <h3 id="balance" class="text-2xl font-bold mt-4">--</h3>
+        </div>
+
+    </section>
+
+    <!-- TOKEN TRANSFER -->
+    <section class="glass p-8 rounded-2xl max-w-2xl">
+
+        <h3 class="text-2xl font-bold mb-6">Transfer KGRC</h3>
+
+        <label class="block text-purple-200 mb-2">
+            Recipient Wallet Address
+        </label>
+
+        <input id="recipient"
+            placeholder="Enter wallet address (0x...)"
+            class="w-full bg-black/30 border border-purple-300/30 p-4 rounded-xl mb-6 text-white">
+
+        <label class="block text-purple-200 mb-2">
+            Token Amount
+        </label>
+
+        <input id="amount"
+            type="number" min="0" step="any"
+            placeholder="Enter KGRC amount"
+            class="w-full bg-black/30 border border-purple-300/30 p-4 rounded-xl mb-6 text-white">
+
+        <button id="transfer"
+            class="main-btn w-full p-4 rounded-xl font-bold">
+            Transfer Tokens
+        </button>
+
+        <p id="status" class="text-purple-200 mt-5 break-words">
+            Connect your wallet to begin.
+        </p>
+
+    </section>
+
+    <!-- TRANSACTION HISTORY -->
+    <section class="glass p-8 rounded-2xl mt-10">
+
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-bold">Transaction History</h3>
+
+            <button id="refreshHistory"
+                class="main-btn px-4 py-2 rounded-lg">
+                Refresh
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+
+                <thead class="text-purple-200 border-b border-white/20">
+                    <tr>
+                        <th class="p-3">Type</th>
+                        <th class="p-3">From</th>
+                        <th class="p-3">To</th>
+                        <th class="p-3">Amount</th>
+                        <th class="p-3">Transaction</th>
+                    </tr>
+                </thead>
+
+                <tbody id="historyBody">
+                    <tr>
+                        <td colspan="5" class="p-4 text-purple-200">
+                            Connect wallet to load transactions.
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+    </section>
+
+    <footer class="text-center text-purple-200 mt-16 text-sm">
+        © 2026 KGR Coin | Powered by Ethereum Sepolia
+    </footer>
+
+</main>
+
+<!-- BLOCKCHAIN JAVASCRIPT -->
+<script type="module">
+
+import { ethers } from
+"https://cdn.jsdelivr.net/npm/ethers@6.13.5/+esm";
+
+// DEPLOYED SEPOLIA CONTRACT
+const CONTRACT_ADDRESS =
+"0xa7eD0903883a4e7fd8d5152F2F417740aC9cf7cC";
+
+// ERC20 ABI
+const ABI = [
+    "event Transfer(address indexed from, address indexed to, uint256 value)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
+    "function totalSupply() view returns (uint256)",
+    "function balanceOf(address) view returns (uint256)",
+    "function transfer(address,uint256) returns (bool)"
+];
+
+let provider, signer, contract, decimals;
+
+const status = document.getElementById("status");
+
+// CONNECT WALLET
+async function connectWallet() {
+    try {
+        if (!window.ethereum) {
+            throw new Error("Please install MetaMask.");
+        }
+
+        provider = new ethers.BrowserProvider(window.ethereum);
+
+        await provider.send("eth_requestAccounts", []);
+
+        const network = await provider.getNetwork();
+
+        if (network.chainId !== 11155111n) {
+            throw new Error("Please switch to Sepolia network.");
+        }
+
+        signer = await provider.getSigner();
+
+        contract = new ethers.Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
+        );
+
+        await loadDetails();
+
+        document.getElementById("connect").textContent =
+            "Wallet Connected";
+
+        status.textContent =
+            "Connected: " + await signer.getAddress();
+
+        await loadTransactionHistory();
+
+    } catch(error) {
+        status.textContent =
+            error.shortMessage || error.message;
+    }
+}
+
+// LOAD TOKEN DETAILS
+async function loadDetails() {
+    const [name, symbol, supply, places] =
+        await Promise.all([
+            contract.name(),
+            contract.symbol(),
+            contract.totalSupply(),
+            contract.decimals()
+        ]);
+
+    decimals = Number(places);
+
+    document.getElementById("name").textContent =
+        name + " (" + symbol + ")";
+
+    document.getElementById("supply").textContent =
+        ethers.formatUnits(supply, decimals) + " " + symbol;
+
+    await updateBalance();
+}
+
+// UPDATE WALLET BALANCE
+async function updateBalance() {
+    const address = await signer.getAddress();
+
+    const balance = await contract.balanceOf(address);
+
+    document.getElementById("balance").textContent =
+        ethers.formatUnits(balance, decimals) + " KGRC";
+}
+
+// LOAD TRANSACTION HISTORY
+async function loadTransactionHistory() {
+    const historyBody = document.getElementById("historyBody");
+
+    try {
+        if (!contract || !provider || !signer) {
+            historyBody.innerHTML =
+                '<tr><td colspan="5" class="p-4">Connect wallet first.</td></tr>';
+            return;
+        }
+
+        historyBody.innerHTML =
+            '<tr><td colspan="5" class="p-4">Loading transactions...</td></tr>';
+
+        const currentBlock = await provider.getBlockNumber();
+        const fromBlock = Math.max(0, currentBlock - 10000);
+
+        const events = await contract.queryFilter(
+            contract.filters.Transfer(),
+            fromBlock,
+            currentBlock
+        );
+
+        const latestEvents = events.slice(-20).reverse();
+
+        if (latestEvents.length === 0) {
+            historyBody.innerHTML =
+                '<tr><td colspan="5" class="p-4">No transfers found in the last 10,000 blocks.</td></tr>';
+            return;
+        }
+
+        historyBody.innerHTML = "";
+
+        const myAddress =
+            (await signer.getAddress()).toLowerCase();
+
+        for (const event of latestEvents) {
+            const from = event.args[0];
+            const to = event.args[1];
+
+            const amount = ethers.formatUnits(
+                event.args[2],
+                decimals
+            );
+
+            let type = "Transfer";
+
+            if (from.toLowerCase() === myAddress) {
+                type = "Sent";
+            }
+
+            if (to.toLowerCase() === myAddress) {
+                type = "Received";
+            }
+
+            const row = document.createElement("tr");
+            row.className = "border-b border-white/10";
+
+            const values = [
+                type,
+                from.slice(0,6) + "..." + from.slice(-4),
+                to.slice(0,6) + "..." + to.slice(-4),
+                amount + " KGRC"
+            ];
+
+            values.forEach(value => {
+                const cell = document.createElement("td");
+                cell.className = "p-3 text-sm";
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            const txCell = document.createElement("td");
+            txCell.className = "p-3 text-sm";
+
+            const link = document.createElement("a");
+            link.href =
+                "https://sepolia.etherscan.io/tx/" +
+                event.transactionHash;
+
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = "View TX";
+            link.className = "text-purple-300 underline";
+
+            txCell.appendChild(link);
+            row.appendChild(txCell);
+            historyBody.appendChild(row);
+        }
+
+    } catch(error) {
+        historyBody.innerHTML = "";
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+
+        cell.colSpan = 5;
+        cell.className = "p-4 text-purple-200";
+        cell.textContent =
+            "Unable to load history: " +
+            (error.shortMessage || error.message);
+
+        row.appendChild(cell);
+        historyBody.appendChild(row);
+    }
+}
+
+// TRANSFER TOKENS
+async function transferTokens() {
+    try {
+        if (!contract) {
+            throw new Error("Connect your wallet first.");
+        }
+
+        const recipient =
+            document.getElementById("recipient").value.trim();
+
+        const amount =
+            document.getElementById("amount").value.trim();
+
+        if (!ethers.isAddress(recipient)) {
+            throw new Error("Enter a valid wallet address.");
+        }
+
+        if (!amount ||
+            !Number.isFinite(Number(amount)) ||
+            Number(amount) <= 0) {
+            throw new Error("Enter a valid positive amount.");
+        }
+
+        const value = ethers.parseUnits(amount, decimals);
+
+        status.textContent =
+            "Waiting for MetaMask approval...";
+
+        const tx = await contract.transfer(recipient, value);
+
+        status.textContent =
+            "Transaction submitted: " + tx.hash;
+
+        await tx.wait();
+
+        status.textContent =
+            "Transfer successful! " + tx.hash;
+
+        document.getElementById("amount").value = "";
+        document.getElementById("recipient").value = "";
+
+        await updateBalance();
+        await loadTransactionHistory();
+
+    } catch(error) {
+        status.textContent =
+            error.shortMessage || error.message;
+    }
+}
+
+// ADD KGR COIN TO METAMASK
+async function addKGRCToken() {
+    if (!window.ethereum) {
+        alert("Please install MetaMask first.");
+        return;
+    }
+
+    try {
+        const chainId = await window.ethereum.request({
+            method: "eth_chainId"
+        });
+
+        if (chainId !== "0xaa36a7") {
+            alert("Please switch MetaMask to the Sepolia network.");
+            return;
+        }
+
+        const wasAdded = await window.ethereum.request({
+            method: "wallet_watchAsset",
+            params: {
+                type: "ERC20",
+                options: {
+                    address: CONTRACT_ADDRESS,
+                    symbol: "KGRC",
+                    decimals: 18
+                }
+            }
+        });
+
+        if (wasAdded) {
+            alert("KGR Coin successfully added to MetaMask!");
+        } else {
+            alert("Token import was cancelled.");
+        }
+
+    } catch(error) {
+        console.error(error);
+        alert("Unable to add KGR Coin: " +
+            (error.message || "Unknown error"));
+    }
+}
+
+// BUTTON LISTENERS
+document.getElementById("connect")
+    .addEventListener("click", connectWallet);
+
+document.getElementById("transfer")
+    .addEventListener("click", transferTokens);
+
+document.getElementById("refreshHistory")
+    .addEventListener("click", loadTransactionHistory);
+
+document.getElementById("addToken")
+    .addEventListener("click", addKGRCToken);
+
+// HANDLE WALLET ACCOUNT CHANGES
+if (window.ethereum) {
+    window.ethereum.on("accountsChanged", () => {
+        signer = null;
+        contract = null;
+
+        document.getElementById("connect").textContent =
+            "Connect Wallet";
+
+        document.getElementById("name").textContent = "KGR Coin";
+        document.getElementById("supply").textContent = "--";
+        document.getElementById("balance").textContent = "--";
+
+        status.textContent =
+            "Wallet changed. Please reconnect.";
+
+        document.getElementById("historyBody").innerHTML =
+            '<tr><td colspan="5" class="p-4">Reconnect wallet to load transactions.</td></tr>';
+    });
+
+    window.ethereum.on("chainChanged", () => {
+        window.location.reload();
+    });
+}
+
+</script>
+
+<!-- INTRO ANIMATION TIMER -->
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+    const intro = document.getElementById("coinIntro");
+
+    // Coin animation duration: 2 seconds
+    setTimeout(() => {
+        intro.classList.add("finished");
+
+        document.body.classList.remove("intro-active");
+        document.body.classList.add("intro-done");
+
+        setTimeout(() => {
+            intro.remove();
+        }, 500);
+
+    }, 2000);
+});
+</script>
+
+</body>
+</html>
